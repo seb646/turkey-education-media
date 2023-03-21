@@ -12,10 +12,11 @@
 library(pdftools)
 library(tidyverse)
 library(stringi)
+library(here)
 
-# download.file("https://dhsprogram.com/pubs/pdf/FR108/FR108.pdf", "inputs/data/1998_Turkey_DHS.pdf", mode="wb")
+download.file("https://dhsprogram.com/pubs/pdf/FR108/FR108.pdf", here::here("inputs/data/1998_Turkey_DHS.pdf"), mode="wb")
 
-education_report <- pdf_text("inputs/data/1998_Turkey_DHS.pdf")
+education_report <- pdf_text(here::here("inputs/data/1998_Turkey_DHS.pdf"))
 
 page_45<-stri_split_lines(education_report[[45]])[[1]]
 page_45<-page_45[page_45 != ""]
