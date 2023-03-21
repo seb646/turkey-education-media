@@ -9,6 +9,8 @@
 #### Workspace set-up ####
 # install.packages('pdftools')
 # install.packages('stringi')
+# install.packages('here')
+# install.packages('tidyverse')
 library(pdftools)
 library(tidyverse)
 library(stringi)
@@ -130,7 +132,7 @@ data <- bind_rows(women_education_age, women_education_residence, husband_educat
   mutate(total = str_replace(total, ",", ".")) |>
   mutate(number_of_people = str_replace(number_of_people, ",", ""))
 
-write_csv(data, "inputs/data/education_levels.csv")
+write_csv(data, here::here("inputs/data/education_levels.csv"))
 
 #### Exposure to Print Media ####
 media_age <- tibble(all = page_48[19:26])
@@ -178,4 +180,4 @@ media_data <- bind_rows(media_age, media_residence)|>
   mutate(husband_number = str_replace(husband_number, ",", "")) |>
   mutate(husband_read_weekly = str_replace(husband_read_weekly, ",", "."))
 
-write_csv(media_data, "inputs/data/exposure_to_print_media.csv")
+write_csv(media_data, here::here("inputs/data/exposure_to_print_media.csv"))
