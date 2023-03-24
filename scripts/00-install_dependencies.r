@@ -1,10 +1,10 @@
 #### Preamble ####
 # Purpose: Install the dependencies required for this project
 # Prerequisites: You must also have the R language installed
-# Author: Sebastian Rodriguez, Laura Lee-Chu, Iz Leitch
+# Author: Youngho Kim, Laura Lee-Chu, Sebastian Rodriguez
 # Email: me@srod.ca
-# Date: 16 March 2023
-# GitHub: https://github.com/seb646/happiness-and-altruism
+# Date: 27 March 2023
+# GitHub: https://github.com/seb646/turkey-education-media
 
 # Install required packages (you only need to do this once)
 install.packages("lubridate")
@@ -17,5 +17,6 @@ install.packages("RColorBrewer")
 install.packages("ggplot2")
 install.packages("kableExtra")
 install.packages("here")
-install.packages("readr")
-install.packages("foreign")
+install.packages('arrow')
+install.packages('pdftools')
+install.packages('stringi')

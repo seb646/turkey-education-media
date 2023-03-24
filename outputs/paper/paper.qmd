@@ -1,15 +1,15 @@
 ---
-title: "Happiness Does Not Cause Altruism: A review of US General Social Survey data"
+title: "Turkey's Education Levels and Exposure to Print Media"
 format: pdf
-author: "Sebastian Rodriguez, Laura Lee-Chu, Iz Leitch"
-abstract: "The relationship between happiness and altruistic behaviors has been the subject of much research, with some studies suggesting a positive correlation and others finding no significant relationship. This paper examines the existing literature on the topic in addition to the survey results provided by NORC’s General Social Survey (GSS) of United States residents and analyzes the data to draw conclusions. Based on the available evidence, it appears that there is little to no relationship between happiness and altruistic behaviors, suggesting that individuals may engage in altruistic acts for reasons other than personal happiness." 
+author: "Youngho Kim, Laura Lee-Chu, Sebastian Rodriguez"
+abstract: "" 
 date: today
 date-format: long
 editor: visual
 toc: TRUE
 number-sections: TRUE
 bibliography: references.bib
-thanks: "Code and data supporting this analysis is available at: [https://github.com/seb646/happiness-and-altruism](https://github.com/seb646/happiness-and-altruism)"
+thanks: "Code and data supporting this analysis is available at: [https://github.com/seb646/turkey-education-media](https://github.com/seb646/turkey-education-media)"
 ---
 
 ```{r}
@@ -18,11 +18,11 @@ thanks: "Code and data supporting this analysis is available at: [https://github
 #| warning: false
 #| output: false
 #### Preamble ####
-# Title: Happiness Does Not Cause Altruism: A review of US General Social Survey data
-# Author: Sebastian Rodriguez, Laura Lee-Chu, Iz Leitch
+# Title: Turkey's Education Levels and Exposure to Print Media
+# Author: Youngho Kim, Laura Lee-Chu, Sebastian Rodriguez
 # Email: me@srod.ca
-# Date: 16 March 2023
-# GitHub: https://github.com/seb646/happiness-and-altruism
+# Date: 27 March 2023
+# GitHub: https://github.com/seb646/turkey-education-media
 
 #### Workspace set-up ####
 # Define required libraries 
@@ -36,257 +36,111 @@ library(RColorBrewer)
 library(ggplot2)
 library(kableExtra)
 library(here)
-library(readr)
+library(arrow)
 
-# Fetch the the clean happiness positive data
-happy_positive_data <- readr::read_csv(here::here("inputs/data/clean/happy_positive_data.csv"), show_col_types = FALSE)
+# Fetch the education levels data
+education_levels <- arrow::read_parquet(here::here("inputs/data/education_levels.parquet"), show_col_types = FALSE)
 
-# Fetch clean directions positive data
-directions_positive_data <- readr::read_csv(here::here("inputs/data/clean/directions_positive_data.csv"), show_col_types = FALSE)
-
-# Fetch the clean homeless positive data
-homeless_positive_data <- readr::read_csv(here::here("inputs/data/clean/homeless_positive_data.csv"), show_col_types = FALSE)
-
-# Fetch the the clean happy negative data
-happy_negative_data <- readr::read_csv(here::here("inputs/data/clean/happy_negative_data.csv"), show_col_types = FALSE)
-
-# Fetch clean directions negative data
-directions_negative_data <- readr::read_csv(here::here("inputs/data/clean/directions_negative_data.csv"), show_col_types = FALSE)
-
-# Fetch the clean homeless negative data
-homeless_negative_data <- readr::read_csv(here::here("inputs/data/clean/homeless_negative_data.csv"), show_col_types = FALSE)
+# Fetch the exposure to print media data
+media_exposure <- arrow::read_parquet(here::here("inputs/data/exposure_to_print_media.parquet"), show_col_types = FALSE)
 ```
 
 ## Introduction
 
-There is an implied correlation between emotions of happiness and altruistic behaviors. Happiness is a question of an individual's well-being, determined by emotional stability, feelings of satisfaction, and countless immeasurable qualitative factors. Happiness is also subjective, varying by an individual's definition of the term in addition to other factors like time of day, a given situation, and more. Altruism is a far more measured metric: while types of altruism differ, altruistic actions themselves are defined and can be quantified. Generally, a leading presumption is that feelings of happiness give a person the security and ability to take altruistic actions.
-
-Researchers have long sought to find a relationship between happiness and altruism, leading to mixed results. Some scholars argue that a "strong correlation exists" between the two, with caveats like "so long as they are not overwhelmed by helping tasks" [@cite_study_1]. One investigation, focusing on university-aged people, found a "significant relationship" between happiness and altruism, going so far as to say that happiness "has a crucial role in creating altruism" [@cite_study_2]. Other scholars argue that happiness has no bearing on altruistic behavior, and instead other feelings, like elevation, contribute to altruistic acts [@cite_study_3]. These differing opinions are echoed throughout the research community, with evidence to support both hypotheses.
-
-Despite general feelings that happiness leads to altruism, there is an important question of whether there is actual causation or a mere correlation between the two social measures. This paper investigates levels of happiness against two specific altruistic acts: donating food or money to the homeless and giving directions to strangers. Specifically, this paper aims to interrogate the relationship between happiness and altruism using data from the NORC's General Social Survey (GSS) of United States residents.
-
-The findings revealed little evidence to support any relationship between happiness and altruism. Using survey results from 2002, 2004, 2012, and 2014, the data shows that there is no definitive link between feelings of happiness and altruistic acts. The survey data showed that, when feelings of happiness increased, it did not necessarily lead to the two altruistic acts studied in this paper. Although no link was found, it is worth noting that the question of happiness and altruism was not the purpose of these surveys. Both happiness and altruism were measured in the general survey, but it did not seek to study their relationship nor did it provide supplementary questions to aid in such a research endeavor. Further studies should explicitly seek to question the public's feelings of happiness against their altruistic behavior.\newpage
-
-## General Social Survey Data
-
-The primary source for data in this study was the United States General Social Survey (GSS), conducted by the University of Chicago's NORC with funding from the National Science Foundation. The GSS has been in operation since 1972, with consistent sampling and questioning that allows researchers to view and predict trends in data. The survey includes recurring and topical modules, with each participant receiving a subset of these modules.
-
-While the GSS consists of hundreds of questions covering a plethora of topics, this study examined three specific questions:
-
-1.  "Taken all together, how would you say things are these days---would you say that you are very happy, pretty happy, or not too happy?"
-2.  "During the past 12 months, how often have you... given directions to a stranger?"
-3.  "During the past 12 months, how often have you... given food or money to a homeless person?"
-
-Question 1 allows participants to respond with "Very happy", "Pretty Happy", "Not too happy", and a variety of abstentions. Questions 2 and 3 sought to examine the frequency of altruistic action, providing responses ranging from "More than once a week" to "Not at all in the past year", with a variety of abstention options.
-
-The survey's question about happiness was the only variable that tracked general happiness with the most complete set of data. Other options included happiness of marriage, happiness in relation to "today" (the day the survey was taken), and a sparsely collected "how happy would you say you are, on the whole." The other datasets either did not relate to this study's research question or lacked the data to provide meaningful insights.
-
-Questions about altruism had a significantly greater range when compared to questions about happiness. The survey's questions on altruism ranged from social actions to financial donations. The two questions selected for study, giving directions to strangers and giving food or money to the homeless, offered the greatest range of representative responses---it combined both social and financial altruism.
-
-### Methodology
-The survey frame is the list of all households in the United States obtained from the U.S. Census Bureau. The GSS uses a multistage, stratified sampling design to select a representative sample of households to select individual respondents from the population of interest, which is non-institutionalized adults 18 and older living in the U.S. [@cite_gss_handbook]. The sample is then selected using a combination of random and quota sampling. The sample is recruited through a combination of in-person and telephone recruitment where interviewers visit selected households or call selected telephone numbers. A small monetary incentive is offered to respondents to participate in the survey.
-
-The GSS uses a multistage, stratified sampling approach, which divides the population into strata based on geographic region, race/ethnicity, and other demographic factors. Within each stratum, a sample of households is chosen at random, and within each selected household, eligible individuals are selected using quota sampling. The survey weights are adjusted to account for non-response bias by sub-sampling non-respondents. 
-
-The sampling design ensures that the sample is representative of the U.S. population.  Their high response rate and large sample size allow for greater precision in the estimates and make it possible to detect smaller differences between groups. The longitudinal design enables the examination of changes in attitudes and behaviours over time. 
-
-The use of quota sampling in the GSS allows for greater control over the composition of the sample, which can be useful for ensuring that certain demographic groups are adequately represented. However, quota sampling can also introduce biases if not strictly adhered to by the interviewers. Additionally, the use of in-person and telephone recruitment may introduce biases if certain groups are more likely to participate through one mode of recruitment than the other. Furthermore, the GSS relies on self-reported data, and respondents may not always provide accurate or truthful answers. While the GSS is designed to be representative of the U.S. population, there may still be limitations in its generalizability to specific subgroups, such as individuals with lower levels of education or those living in rural areas. Until 2006, the GSS only sampled the English-speaking population, limiting representation accuracy. Spanish speakers usually make up 60-65% of the language exclusions while about a dozen languages make up the remaining exclusions [@cite_gss_handbook].\
-
-**Questionnaire**
-
-The GSS uses standardized questions and response options, enabling easier comparisons of responses over time and across different demographic groups. A positive aspect of the questions on altruism is that the responses explore multiple dimensions of altruistic behaviour by factoring in the frequency and extent of these behaviours.  
-
-However, there are significant limitations to the questionnaires.[^1] The happiness questions provided a limited range of answers, which may not capture the full range of respondents' experiences or influencing factors. Additionally, responses to questions about happiness and altruism rely on self-report, which could be influenced by social desirability and other cognitive biases and result in inaccurate reports. 
-
-[^1]: Archived GSS sample questionnaires are available at: <https://gss.norc.org/get-documentation/questionnaires>
-
-\newpage
-
-### Happiness and Donating to the Homeless
-
-Assisting those in need is the most fundamental definition of altruism, and donating to the homeless is perhaps the best representation of altruism. Donating to the homeless---whether in the form of money or food---requires empathy and true care for the well-being of others. While it can be considered a form of financial altruism, donating to the homeless goes far beyond other acts of financial altruism, like donating to charities. Donating to the homeless requires direct interactions with a homeless person. These interactions can be more difficult, there are time and physical restrictions that may prevent this form of altruism. However, this form of altruism represents the most direct and personal altruistic action a person can take.
-
-The first graph (@fig-1) charts the number of people who identified as "Very happy" or "Pretty happy" versus the number of people who donated food or money to a homeless person at least or more than 2 times per year. This frequency of altruistic action was selected as a baseline due to the possible restrictions that come with this action. For example, as explored earlier, financial and other barriers may prevent this type of altruism. The graph charts these two variables against the years 2002, 2004, 2012, and 2014.
+## Data
 
 ```{r}
 #| messages: false
 #| echo: false
 #| warning: false
-#| fig-cap: "Happiness vs Giving Food or Money to the Homeless"
-#| label: fig-1
+#| fig-cap: "Table 1: Education Levels"
+#| label: table-1
+education_levels |>
+  # Select relevant columns
+  select(
+    characteristic, 
+    no_education, 
+    primary_incomplete, 
+    primary_complete,
+    secondary_incomplete,
+    secondary_complete,
+    number_of_people
+  ) |>
+  
+  # Rename column rows
+  rename(
+    "Background Characteristic" = "characteristic", 
+    "No Education" = "no_education", 
+    "Primary Incomplete" = "primary_incomplete", 
+    "Primary Complete" = "primary_complete", 
+    "Secondary Incomplete" = "secondary_incomplete",
+    "Secondary Complete+" = "secondary_complete",
+    "Number of People" = "number_of_people"
+  ) |>
+  
+  # Init the table
+  kable(align = "l", booktabs = TRUE, escape = FALSE, linesep = "") |>
+  
+  # Add headers
+  add_header_above(
+    c("", "Level of Education" = 5, ""),
+    align = "c",
+    bold = TRUE
+  ) |>
+  
+  # Style the table 
+  kable_styling(font_size = 8, latex_options = "hold_position", full_width = TRUE) |>
+  
+  # Increase width of first column
+  column_spec(1, width = "13em")|>
 
-# Set the colors for the lines and labels for the legend
-colors <- c(
-  'Feeling "pretty happy" or "very happy"' = "steelblue",
-  "Giving money or food to the homeless\n more than 2 times a year" = "darkred"
-)
-
-ggplot() +
-  # Define axis labels
-  labs(
-    y = "Number of People",
-    x = "Year",
-    color = "Legend"
-  ) +
-
-  # Set the theme
-  theme_minimal() +
-
-  # Import the happy positive data for the line
-  geom_line(data = happy_positive_data, aes(x = year, y = people, color = 'Feeling "pretty happy" or "very happy"')) +
-
-  # Import the homeless positive data for the line
-  geom_line(data = homeless_positive_data, aes(x = year, y = people, color = "Giving money or food to the homeless\n more than 2 times a year")) +
-
-  # Set scales to only be years where data is provided
-  scale_x_continuous(breaks = c(2002, 2004, 2012, 2014)) +
-
-  # Set colors for the graph
-  scale_color_manual(values = colors)
+  # Add section headers
+  pack_rows("Women - Age", start_row = 1, end_row = 7) |>
+  pack_rows("Women - Residence", start_row = 8, end_row = 9) |>
+  pack_rows("Husbands - Age", start_row = 10, end_row = 16) |>
+  pack_rows("Husbands - Residence", start_row = 17, end_row = 18)
+  
 ```
-
-\newpage
-
-The second graph (@fig-2) charts the number of people who identified as "Not too happy" against the number of people who did not donate food or money to a homeless person or only did so once a year. This "negative" view of unhappiness and non-altruistic behavior contrasts the previous graph and was intended to provide insight as to whether feeling not happy impacted a lack of altruistic behavior.
 
 ```{r}
 #| messages: false
 #| echo: false
 #| warning: false
-#| fig-cap: "Unhappiness vs. Not Giving Food or Money to the Homeless"
-#| label: fig-2
-
-# Set the colors for the lines and labels for the legend
-colors <- c(
-  'Feeling "not to happy"' = "steelblue",
-  "Giving money or food to the homeless\n less than 2 times a year" = "darkred"
-)
-
-ggplot() +
-  # Define axis labels
-  labs(
-    y = "Number of People",
-    x = "Year",
-    color = "Legend"
-  ) +
-
-  # Set the theme
-  theme_minimal() +
-
-  # Import the happy negative data for the line
-  geom_line(data = happy_negative_data, aes(x = year, y = people, color = 'Feeling "not to happy"')) +
-
-  # Import the homeless negative data for the line
-  geom_line(data = homeless_negative_data, aes(x = year, y = people, color =  "Giving money or food to the homeless\n less than 2 times a year")) +
-
-  # Set scales to only be years where data is provided
-  scale_x_continuous(breaks = c(2002, 2004, 2012, 2014)) +
-
-  # Set colors for the graph
-  scale_color_manual(values = colors)
+#| fig-cap: "Table 2: Exposure to Print Media"
+#| label: table-2
+media_exposure |>
+  # Rename column rows
+  rename(
+    "Background Characteristic" = "characteristic", 
+    "Weekly Newspaper Reading" = "women_read_weekly", 
+    "Number of Women" = "women_number", 
+    "Weekly Newspaper Reading\n" = "husband_read_weekly", 
+    "Number of Husbands" = "husband_number"
+  ) |>
+  
+  # Init the kable table
+  kable(align = "l", booktabs = TRUE, escape = FALSE, linesep = "") |>
+  
+  # Add headers
+  add_header_above(
+    c("", "Women" = 2, "Husbands" = 2),
+    align = "c",
+    bold = TRUE
+  ) |>
+  
+  # Style the table 
+  kable_styling(font_size = 8, latex_options = "hold_position", full_width = TRUE) |>
+  
+  # Increase width of first column
+  column_spec(1, width = "13em")|>
+  
+  # Add section headers
+  pack_rows("Age", start_row = 1, end_row = 8) |>
+  pack_rows("Residence", start_row = 9, end_row = 10)
+  
 ```
-
-Charting both happiness versus altruism and unhappiness versus non-altruistic tendencies revealed that there was no significant correlation between the two variables. Between 2002 and 2004, general happiness increased while this altruistic action decreased. However, between 2012 and 2014, both happiness and donations to the homeless increased, but they did not do so at the same or even a similar rate so it is insufficient in providing meaningful insights.
-
-\newpage
-
-### Happiness and Giving Directions to Strangers
-
-Altruism comes in a diverse range of actions---it represents more than financial or physical donations. A significant portion of the altruistic questions of the GSS relates to social altruism, questioning whether people donate their own time and energy to improve the well-being of others. Stopping to help a stranger comes with drawbacks: it is potentially dangerous, it consumes time, and it disrupts a person's routine. It also represents an arguably less important act when compared to helping the homeless---the stakes are lowered, and it is less necessary to society. Taking the time to stop and help a stranger when they are not in dire need requires an elevated altruistic sense that transcends mere obligation.
-
-The first graph (@fig-3) charts the number of people who identified as "Very happy" or "Pretty happy" versus the number of people who gave directions to a stranger at least or more than 2 times per year. Like donating to the homeless, this baseline was selected because of the possible restrictions that come with the action. Not everyone is in a position to give directions to a stranger, either because they live in a low-traffic, low-tourist area or because of other time restrictions. The graph charts these two variables in the years 2002, 2004, 2012, and 2014.
-
-```{r}
-#| messages: false
-#| echo: false
-#| warning: false
-#| fig-cap: "Happiness vs Giving Directions to Strangers"
-#| label: fig-3
-
-# Set the colors for the lines and labels for the legend
-colors <- c(
-  'Feeling "pretty happy" or "very happy"' = "steelblue",
-  "Giving directions to a stranger\n more than 2 times a year" = "darkred"
-)
-
-ggplot() +
-  # Define axis labels
-  labs(
-    y = "Number of People",
-    x = "Year",
-    color = "Legend"
-  ) +
-
-  # Set the theme
-  theme_minimal() +
-
-  # Import the happy positive data for the line
-  geom_line(data = happy_positive_data, aes(x = year, y = people, color = 'Feeling "pretty happy" or "very happy"')) +
-
-  # Import the directions positive data for the line
-  geom_line(data = directions_positive_data, aes(x = year, y = people, color = "Giving directions to a stranger\n more than 2 times a year")) +
-
-  # Set scales to only be years where data is provided
-  scale_x_continuous(breaks = c(2002, 2004, 2012, 2014)) +
-
-  # Set colors for the graph
-  scale_color_manual(values = colors)
-```
-
-\newpage
-
-The second graph (@fig-4) charts the number of people who said they were "Not too happy" against the number of people who did not give directions to strangers or only did so once a year. Highlighting this "negative" frame of the question seeks to understand if there is a correlation between a lack of happiness and non-altruistic behavior.
-
-```{r}
-#| messages: false
-#| echo: false
-#| warning: false
-#| fig-cap: "Unhappiness vs. Not Giving Directions to Strangers"
-#| label: fig-4
-
-# Set the colors for the lines and labels for the legend
-colors <- c(
-  'Feeling "not too happy"' = "steelblue",
-  "Giving directions to a stranger\n less than 2 times a year" = "darkred"
-)
-
-ggplot() +
-  # Define axis labels
-  labs(
-    y = "Number of People",
-    x = "Year",
-    color = "Legend"
-  ) +
-
-  # Set the theme
-  theme_minimal() +
-
-  # Import the happy negative data for the line
-  geom_line(data = happy_negative_data, aes(x = year, y = people, color = 'Feeling "not too happy"')) +
-
-  # Import the directions negative data for the line
-  geom_line(data = directions_negative_data, aes(x = year, y = people, color = "Giving directions to a stranger\n less than 2 times a year")) +
-
-  # Set scales to only be years where data is provided
-  scale_x_continuous(breaks = c(2002, 2004, 2012, 2014)) +
-
-  # Set colors for the graph
-  scale_color_manual(values = colors)
-```
-
-Charting happiness against the altruistic tendency to give directions to a stranger revealed that there was no significant correlation between happiness and altruism. In fact, the data shows that the opposite was true in this specific case. Between 2002 and 2004, feelings of happiness decreased while the act of giving directions to a stranger increased. Between 2012 and 2014, the number of people who gave directions to a stranger decreased steadily while there was a statistically significant number of people who reported feeling "Pretty happy" or "Very happy." When examining the negatives of both scenarios (unhappiness and not giving directions to a stranger), both the number of people who felt unhappy and the number of people who did not give directions significantly increased. \newpage
 
 ## Discussion
-
-Applying the U.S. General Social Survey (GSS) to this study came with significant limitations. The most notable limitation was that the survey was not intended to reveal a connection between happiness and altruism. The general nature of the survey meant that the questions were ambiguous and did not seek further detail from the participant. For example, while it asked the participant to label their happiness, the cause of their happiness---or unhappiness---was not clear. Further, altruistic questions were only asked in certain years: 2002, 2004, 2012, and 2014. This limited data set did not give the breadth of data that this study desired, although it was enough to make a preliminary determination on the relationship between happiness and altruism.
-
-The GSS questions also came with certain biases that may have skewed results. For example, in relation to altruism and giving directions to a stranger, it is important to ask: how often is the participant given the opportunity to perform this act? While many people in the United States live in a city or in high-traffic, high-tourist areas, a great number of people live in rural areas where they are not given such an opportunity. To the same extent, the question of opportunity is similar for donating food or money to the homeless. It is necessary to understand why a person did not donate to the homeless. Did they not have the opportunity because they do not live in an area that has a significant number of homeless people? Did they not have the financial means to donate at that time? Did they have the desire to donate, but did the act of traveling to an ATM or restaurant outweigh their altruistic urge? This context would reveal significant insight into the situations surrounding these altruistic actions and help determine whether the altruistic nature existed and the person simply lacked the means to follow through.
-
-Another important consideration is whether the GSS is an effective tool in answering this question. It was an effective tool---to an extent. The GSS provided a surface-level baseline to measure both happiness and altruistic actions. It collected self-reported levels of happiness and self-reported acts of altruism. This was enough to determine that there was rarely a correlation and no causation between happiness and altruism in the United States at the time of these surveys. However, it creates questions about altruistic intent and intrinsic definitions of happiness, while simultaneously providing a platform for further research.
-
-While this study suggests a lack of a relationship between happiness and altruism, the limitations that come from the General Social Survey (GSS) questions make it difficult to investigate the question further.
-
-\newpage
 
 ## Inclusive Acknowledgements
 
@@ -298,208 +152,11 @@ This statement was originally prepared in consultation with First Nations House 
 
 **Data Acknowledgement**
 
-The data used in this paper was obtained through the General Social Survey (GSS), a project of the independent research organization NORC at the University of Chicago, with principal funding from the National Science Foundation. This paper uses three data sets from the NORC's GSS:
-
--   General Happiness[^2]
--   Has Given Directions to a Stranger[^3]
--   Has Given Money or Food to a Homeless Person[^4]
-
-[^2]: General Happiness data is available at: <https://gssdataexplorer.norc.org/variables/434/vshow>
-
-[^3]: Has Given Directions to a Stranger data is available at: <https://gssdataexplorer.norc.org/variables/2886/vshow>
-
-[^4]: Has Given Money or Food to a Homeless Person data is available at: <https://gssdataexplorer.norc.org/variables/2878/vshow>\
+The data used in this paper was obtained from the Demographic and Health Surveys (DHS), a program of the United States Agency for International Development (USAID). The DHS and USAID gathered this data from the 1998 Turkey Demographic and Health Survey, originally collected by Hacettepe University, Institute of Population Studies and Macro International.
 
 **Resources Acknowledgment**
 
-The primary tool used to analyse data in this paper is R, an open-source statistical programming language [@cite_tool_r]. The paper also uses a number of R packages, including: dplyr [@cite_tool_dplyr], foreign [@cite_tool_foreign], ggplot2 [@cite_tool_ggplot2], here [@cite_tool_here], janitor [@cite_tool_janitor], kableExtra [@cite_tool_kableextra], knitr [@cite_tool_knitr], lubridate [@cite_tool_lubridate], readr [@cite_tool_readr], RColorBrewer [@cite_tool_rcolorbrewer], scales [@cite_tool_scales], and tidyverse [@cite_tool_tidyverse]. \newpage
-
-## Appendix
-
-### Appendix A: Raw Data
-
-**Happiness**
-
-```{r}
-#| messages: false
-#| echo: false
-#| warning: false
-#| fig-cap: "Raw GSS Data: General Happiness (by year)"
-#| label: fig-5
-#### Create a table summarizing happiness data from GSS ####
-summarized_happiness_data <- merge(x = happy_positive_data, y = happy_negative_data, by = "year", all.x = TRUE) |>
-   # Rename columns
-  rename("Year" = "year", '"Very" or "Pretty" happy' = "people.x", '"Not too happy"' = "people.y")
-  
-summarized_happiness_data |>
-  # Table configuration
-  knitr::kable(align = "l", booktabs = TRUE, escape = FALSE, linesep = "") |>
-
-  # Add headers for table data
-  add_header_above(
-    c(" ", "Number of People Feeling" = 2),
-    align = "c",
-    bold = TRUE
-  ) |>
-
-  # Style the table
-  kable_styling(font_size = 10, latex_options = "hold_position", full_width = TRUE) |>
-
-  # Make the table headers bold
-  row_spec(0, bold = TRUE) |>
-
-  # Increase width of first column
-  column_spec(1, width = "10em")
-```
-
-\
-
-**Donating to the Homeless**
-
-```{r}
-#| messages: false
-#| echo: false
-#| warning: false
-#| fig-cap: "Raw GSS Data: Giving Food or Money to the Homeless (by year)"
-#| label: fig-6
-#### Create a table summarizing homeless donation data from GSS ####
-summarized_homeless_data <- merge(x = homeless_positive_data, y = homeless_negative_data, by = "year", all.x = TRUE) |>
-   # Rename columns
-  rename("Year" = "year", 'At least twice a year' = "people.x", 'Less than twice a year' = "people.y")
-  
-summarized_homeless_data |>
-  # Table configuration
-  knitr::kable(align = "l", booktabs = TRUE, escape = FALSE, linesep = "") |>
-
-  # Add headers for table data
-  add_header_above(
-    c(" ", "Number of People Donating to the Homeless" = 2),
-    align = "c",
-    bold = TRUE
-  ) |>
-
-  # Style the table
-  kable_styling(font_size = 10, latex_options = "hold_position", full_width = TRUE) |>
-
-  # Make the table headers bold
-  row_spec(0, bold = TRUE) |>
-
-  # Increase width of first column
-  column_spec(1, width = "10em")
-```
-
-\
-
-**Giving Directions to a Stranger**
-
-```{r}
-#| messages: false
-#| echo: false
-#| warning: false
-#| fig-cap: "Raw GSS Data: Giving Directions to a Stanger (by year)"
-#| label: fig-7
-#### Create a table summarizing giving strangers directions data from GSS ####
-summarized_directions_data <- merge(x = directions_positive_data, y = directions_negative_data, by = "year", all.x = TRUE) |>
-   # Rename columns
-  rename("Year" = "year", 'At least twice a year' = "people.x", 'Less than twice a year' = "people.y")
-  
-summarized_directions_data |>
-  # Table configuration
-  knitr::kable(align = "l", booktabs = TRUE, escape = FALSE, linesep = "") |>
-
-  # Add headers for table data
-  add_header_above(
-    c(" ", "Number of People Giving Strangers Directions" = 2),
-    align = "c",
-    bold = TRUE
-  ) |>
-
-  # Style the table
-  kable_styling(font_size = 10, latex_options = "hold_position", full_width = TRUE) |>
-
-  # Make the table headers bold
-  row_spec(0, bold = TRUE) |>
-
-  # Increase width of first column
-  column_spec(1, width = "10em")
-```
-
-\newpage
-
-### Appendix B: Supplementary Survey
-
-The supplementary survey attached to this project is available through Google Forms: <https://forms.gle/Zr2jj93bXFaaPkPdA>.\
-
-**Survey Introduction**
-
-Researchers have long sought to find a connection between happiness and altruistic actions. Some studies show that happiness may lead to greater levels of altruism, while others fail to find a relationship between the emotion and subsequent action. With homelessness on the rise and a growing separation between socio-economic classes, it is important to discover the leading causes of altruism.
-
-By participating in this survey, you consent to us collecting your basic information and understand that we will be using your responses in our study. The survey is anonymous, we will not collect or share any personal identifiable information. The survey is also voluntary, and you may withdraw at any time.
-
-If you have any questions or concerns, feel free to contact Sebastian Rodriguez (s \[dot\] rodriguez \[at\] mail \[dot\] utoronto \[dot\] ca).\
-
-**Survey Questions**
-
-1.  On a scale of 1-5, how happy do you feel right now?
-    a.  Very happy
-    b.  Pretty happy
-    c.  Happy
-    d.  Not too happy
-    e.  Unhappy
-2.  How often have you given directions to a stranger in the past year?
-    a.  More than once a week
-    b.  Once a week
-    c.  Once a month
-    d.  At least 2 or 3 times in the past year
-    e.  Once in the past year
-    f.  Not at all in the past year
-3.  How often are you given the opportunity to give directions to a stranger?
-    a.  More than once a week
-    b.  Once a week
-    c.  Once a month
-    d.  At least 2 or 3 times in the past year
-    e.  Once in the past year
-    f.  Not at all in the past year
-4.  If you did not give directions to a stranger, did you want to?
-    a.  Yes
-    b.  It depends on the day
-    c.  It depends on the time I have in the moment
-    d.  No
-5.  If you had the desire but did not give directions to a stranger, what prevented you from doing so?
-    a.  I do not live in an area with a lot of strangers asking for directions
-    b.  I did not have the time to help
-    c.  I did not know enough about the area to be helpful
-    d.  Another factor beyond my control prevented me from helping
-6.  How often have you donated food or money to a homeless person in the past year?
-    a.  More than once a week
-    b.  Once a week
-    c.  Once a month
-    d.  At least 2 or 3 times in the past year
-    e.  Once in the past year
-    f.  Not at all in the past year
-7.  How often are you given the opportunity to donate to a homeless person?
-    a.  More than once a week
-    b.  Once a week
-    c.  Once a month
-    d.  At least 2 or 3 times in the past year
-    e.  Once in the past year
-    f.  Not at all in the past year
-8.  If you did not donate to a homeless person, did you want to?
-    a.  Yes
-    b.  It depends on the day
-    c.  It depends on the money and resources at my disposal
-    d.  No
-9.  If you had the desire but did not donate to a homeless person, what prevented you from doing so?
-    a.  I do not live in an area with a lot of homeless people
-    b.  I did not have the time to help
-    c.  I did not have the money or resources to help
-    d.  Another factor beyond my control prevented me from helping\
-
-**Survey Conclusion**
-
-Thank you for participating in this survey! Your responses will greatly aid our effort to understand altruism and whether happiness has any impact on the behavior. If at any time you wish to withdraw from this survey, please contact Sebastian Rodriguez (s \[dot\] rodriguez \[at\] mail \[dot\] utoronto \[dot\] ca).
-
-\newpage
+The primary tool used to analyse data in this paper is R, an open-source statistical programming language [@cite_tool_r]. The paper also uses a number of R packages, including: dplyr [@cite_tool_dplyr], foreign [@cite_tool_foreign], ggplot2 [@cite_tool_ggplot2], here [@cite_tool_here], janitor [@cite_tool_janitor], kableExtra [@cite_tool_kableextra], knitr [@cite_tool_knitr], lubridate [@cite_tool_lubridate], readr [@cite_tool_readr], RColorBrewer [@cite_tool_rcolorbrewer], scales [@cite_tool_scales], and tidyverse [@cite_tool_tidyverse].
 
 ## References
 

@@ -12,6 +12,7 @@ outputs/paper/.DS_Store
 
 # Ignore any data files
 *.csv
+*.parquet
 
 # Ignore other file types
 *.html
